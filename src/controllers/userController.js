@@ -1,5 +1,5 @@
 import { 
-  createUser, findUserById, findUserByLoginData, findUserByName
+  createUser, findUserById, findUserByIdAndName, findUserByLoginData, findUserByName
 } from "../services/userService.js"
 import { getErrorResponse, getJsonResponse } from "./controllerUtils.js"
 
@@ -15,11 +15,20 @@ export const getUser = async (req, res) => {
 
 export const addUser = async (req, res) => {
   const { body } = req
-  const { id, name, password } = body
+  const { id, name, password, confirmPassword } = body
 
-  /* TODO: validation */
-  if (!id || !name || !password) return getErrorResponse(res, 'invalid user data')
+  /*
+    if data is missing -> status 400
+    if all data provided, but passwords don't match OR id already in use -> status 401
+  */
 
+  // TODO: validation
+  if (!id || !name || !password || !confirmPassword) return getErrorResponse(res, 'Fill in all register data')
+  if (password !== confirmPassword) return getErrorResponse(res, 'Passwords don\'t match', 401, 'confirmPassword')
+
+  const user = await findUserById(id)
+  if (!!user) return getErrorResponse(res, `User with the '${id}' id already exists`, 401, 'id')
+  
   try {
     const user = await createUser(body)
     return getJsonResponse(res, user)
@@ -47,7 +56,7 @@ export const loginUser = async (req, res) => {
     if all data provided, but don't match -> status 401
   */
   if (!await findUserById(id)) return getErrorResponse(res, 'User with provided id doesn\'t exist', 404, 'id')
-  if (!await findUserByName(name)) return getErrorResponse(res, 'User with provided id and name doesn\'t exist', 404, 'name')
+  if (!await findUserByIdAndName(id, name)) return getErrorResponse(res, 'User with provided id and name doesn\'t exist', 404, 'name')
   if (!user) return getErrorResponse(res, 'Incorrect password', 401, 'password')
 
   return getJsonResponse(res, user)
