@@ -1,11 +1,15 @@
 
 import { Schema, model } from "mongoose"
+import { requiredString, requiredUniqueString } from "./modelUtils.js"
 
 const UserSchema = new Schema({
-  id: String, // id or alias
-  name: String, // only email?
-  password: String,
-  createdAt: Date,
+  id: requiredUniqueString, // id or alias
+  name: requiredUniqueString, // only email?
+  password: requiredString,
+  createdAt: {
+    type: Date,
+    required: true
+  },
   /*
     TODO:
     updatedAt,

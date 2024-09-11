@@ -1,7 +1,8 @@
-export const getErrorResponse = (res, msg) => (
+// TODO: take status as param?
+export const getErrorResponse = (res, msg, status = 400, id = null) => (
   res
-    .status(400)
-    .send({ msg })
+    .status(status)
+    .send({ msg, id })
 )
 
 export const getJsonResponse = (res, data) => {

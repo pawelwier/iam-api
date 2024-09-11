@@ -6,10 +6,13 @@ import { userRouter } from './routers/userRouter.js'
 
 dotenv.config()
 
+const {
+  PORT, MONGO_USERNAME, MONGO_PASSWORD, MONGO_DB_NAME
+} = process.env
 const app = express()
-const port = process.env.PORT || 4040
+const port = PORT || 4040
 
-const uri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@test.fdk5v31.mongodb.net/${process.env.MONGO_DB_NAME}`
+const uri = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@test.fdk5v31.mongodb.net/${MONGO_DB_NAME}`
 
 makeConnection(uri)
 
