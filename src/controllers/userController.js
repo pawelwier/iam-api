@@ -1,7 +1,7 @@
 import { 
   createUser, findUserById, findUserByIdAndName, findUserByLoginData, findUserByName
 } from "../services/userService.js"
-import { getErrorResponse, getJsonResponse } from "./controllerUtils.js"
+import { getErrorResponse, getJsonResponse, validatePassword } from "./controllerUtils.js"
 
 export const getUser = async (req, res) => {
   const { id, name } = req.query
@@ -25,6 +25,7 @@ export const addUser = async (req, res) => {
   // TODO: validation
   if (!id || !name || !password || !confirmPassword) return getErrorResponse(res, 'Fill in all register data')
   if (password !== confirmPassword) return getErrorResponse(res, 'Passwords don\'t match', 401, 'confirmPassword')
+  if (!validatePassword(password)) return getErrorResponse(res, 'Password needs to be min. 8 characters, min. one number', 401, 'password')
 
   const user = await findUserById(id)
   if (!!user) return getErrorResponse(res, `User with the '${id}' id already exists`, 401, 'id')
